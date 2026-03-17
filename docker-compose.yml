@@ -1,0 +1,55 @@
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    networks:
+      - meshgate-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - meshgate-network
+
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - meshgate-network
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8088:8080"
+    networks:
+      - meshgate-network
+    depends_on:
+      - eureka-server
+      - postgres
+      - rabbitmq
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - meshgate-network
+    depends_on:
+      - api-gateway
+      - eureka-server
+      - rabbitmq
+
+networks:
+  meshgate-network:
+    driver: bridge
