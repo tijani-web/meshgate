@@ -3,10 +3,12 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: holdontohope
     ports:
       - "5432:5432"
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - meshgate-network
 
@@ -18,23 +20,23 @@ services:
     networks:
       - meshgate-network
 
-  eureka-server:
-    build: ./eureka-server
-    ports:
-      - "8761:8761"
-    networks:
-      - meshgate-network
+  # eureka-server:
+  #   build: ./eureka-server
+  #   ports:
+  #     - "8761:8761"
+  #   networks:
+  #     - meshgate-network
 
-  api-gateway:
-    build: ./api-gateway
-    ports:
-      - "8088:8080"
-    networks:
-      - meshgate-network
-    depends_on:
-      - eureka-server
-      - postgres
-      - rabbitmq
+  # api-gateway:
+  #   build: ./api-gateway
+  #   ports:
+  #     - "8088:8080"
+  #   networks:
+  #     - meshgate-network
+  #   depends_on:
+  #     - eureka-server
+  #     - postgres
+  #     - rabbitmq
 
   nginx:
     image: nginx:latest
@@ -46,9 +48,10 @@ services:
     networks:
       - meshgate-network
     depends_on:
-      - api-gateway
-      - eureka-server
+      - postgres
       - rabbitmq
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   meshgate-network:
