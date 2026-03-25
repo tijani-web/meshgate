@@ -10,6 +10,7 @@ services:
       - "5432:5432"
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:Z
+      - postgres-data:/var/lib/postgresql/data:Z
     networks:
       - meshgate-network
 
@@ -106,3 +107,6 @@ services:
 networks:
   meshgate-network:
     driver: bridge
+
+volumes:
+  postgres-data:
