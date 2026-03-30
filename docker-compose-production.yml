@@ -6,8 +6,6 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: holdontohope
-    ports:
-      - "5432:5432"
     volumes:
       - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro,Z
       - postgres-data:/var/lib/postgresql/data:Z
@@ -16,9 +14,6 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
     networks:
       - meshgate-network
 
