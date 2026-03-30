@@ -11,7 +11,9 @@ echo "Creating certbot directories..."
 mkdir -p certbot/conf certbot/www
 
 # Detect compose command
-if command -v docker-compose &> /dev/null; then
+if [ -x "/usr/local/bin/docker-compose" ]; then
+  COMPOSE_CMD="/usr/local/bin/docker-compose"
+elif command -v docker-compose &> /dev/null; then
   COMPOSE_CMD="docker-compose"
 elif docker compose version &> /dev/null; then
   COMPOSE_CMD="docker compose"
